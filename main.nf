@@ -22,7 +22,7 @@ def helpMessage() {
     nextflow run nf-core/influenzangs --reads '*_R{1,2}.fastq.gz' -profile docker
 
     Mandatory arguments:
-      --readspp                       Path to input data (must be surrounded with quotes)
+      --reads2                      Path to input data (must be surrounded with quotes)
       -profile                      Configuration profile to use. Can use multiple (comma separated)
                                     Available: conda, docker, singularity, awsbatch, test and more.
 
