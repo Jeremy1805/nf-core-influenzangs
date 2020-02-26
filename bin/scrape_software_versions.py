@@ -8,7 +8,12 @@ regexes = {
     'nf-core/influenzangs': ['v_pipeline.txt', r"(\S+)"],
     'Nextflow': ['v_nextflow.txt', r"(\S+)"],
     'FastQC': ['v_fastqc.txt', r"FastQC v(\S+)"],
+    'samtools': ['v_samtools.txt', r"samtools (\S+)"],
+    'BWA': ['v_bwa.txt', r"Version: (\S+)"],
     'MultiQC': ['v_multiqc.txt', r"multiqc, version (\S+)"],
+    'TrimGalore': ['v_trim_galore.txt', r"version (\S+)"],
+    'PicardMarkDuplicates': ['v_picard_mark_dup.txt', r"(\S+)"],
+    'PicardCreateSequenceDictionary': ['v_picard_dict.txt', r"(\S+)"]
 }
 results = OrderedDict()
 results['nf-core/influenzangs'] = '<span style="color:#999999;\">N/A</span>'
