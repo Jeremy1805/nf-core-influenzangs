@@ -27,4 +27,4 @@ The nf-core/influenzangs pipeline comes with documentation about the pipeline, f
 <!-- TODO nf-core: Add a brief overview of what the pipeline does and how it works -->
 
 ## Credits
-nf-core/influenzangs was originally written by Jeremy Guntoro, Aengus Stewart.
+nf-core/influenzangs was originally written by Jeremy Guntoro and Aengus Stewart.

@@ -5,3 +5,7 @@ results/
 .DS_Store
 tests/test_data
 *.pyc
+slurm*
+submit*
+crick.config
+containers/
