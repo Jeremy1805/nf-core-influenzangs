@@ -3,15 +3,10 @@ work/
 data/
 results/
 .DS_Store
-<<<<<<< HEAD
-tests/test_data
+tests/
+testing/
 *.pyc
 slurm*
 submit*
 crick.config
 containers/
-=======
-tests/
-testing/
-*.pyc
->>>>>>> TEMPLATE
