@@ -96,7 +96,7 @@ if(workflow.revision) summary['Pipeline Release'] = workflow.revision
 summary['Run Name']         = custom_runName ?: workflow.runName
 // TODO nf-core: Report custom parameters here
 summary['Reads']            = params.reads
-summary['References']       = params.refs
+summary['References']       = params.genome
 summary['Max Resources']    = "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
 if(workflow.containerEngine) summary['Container'] = "$workflow.containerEngine - $workflow.container"
 summary['Output dir']       = params.outdir
@@ -221,7 +221,7 @@ process trim_samples {
 /*
  * STEP 3 - Index Reference
  */
-Channel.fromPath(params.refs)
+Channel.fromPath(params.genome)
     .map{path -> [path.simpleName,path]}
     .into{ labelled_reference_ch; reference_tosplit_ch }
 

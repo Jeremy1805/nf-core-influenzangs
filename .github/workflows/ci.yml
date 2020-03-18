@@ -21,10 +21,30 @@ jobs:
           sudo mv nextflow /usr/local/bin/
       - name: Pull docker image
         run: |
-          docker pull nfcore/influenzangs:dev
-          docker tag nfcore/influenzangs:dev nfcore/influenzangs:dev
+          docker pull jeremy1805/influenzangs:1.0
+          docker tag jeremy1805/influenzangs:1.0 jeremy1805/influenzangs:1.0
+          docker pull broadinstitute/gatk3:3.8-1
       - name: Run pipeline with test data
         run: |
-          # TODO nf-core: You can customise CI pipeline run tests as required
-          # (eg. adding multiple test runs with different parameters)
           nextflow run ${GITHUB_WORKSPACE} -profile test,docker
+data_test:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install Nextflow
+        run: |
+          wget -qO- get.nextflow.io | bash
+          sudo mv nextflow /usr/local/bin/
+        env:
+          NXF_VER: '19.10.0'
+      - name: Download and tag image
+        run: |
+          docker pull jeremy1805/influenzangs:1.0
+          docker tag jeremy1805/influenzangs:1.0 jeremy1805/influenzangs:1.0
+          docker pull broadinstitute/gatk3:3.8-1
+      - name: Get test data
+        run: |
+          git clone --single-branch --branch influenzangs https://github.com/Jeremy1805/test-datasets data
+      - name: Run test
+        run: |
+          nextflow run . -profile test,docker --reads "data/testdata/fastq/*_L001_R{1,2}_001.fastq" --genome "data/testdata/genome/*.fasta"
