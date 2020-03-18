@@ -317,7 +317,7 @@ while( defined( $record = <F_IN_MPILE> ) )
           last;
         }
         # Heterozygous
-        elsif ( $base_percentage >= $opt_l && $base_percentage <= $opt_u )
+        elsif ( $base_percentage >= $opt_l && $base_percentage < $opt_u )
         {
           $ambiguity .= $base;
         }

@@ -239,6 +239,7 @@ covext="cov"
 FILTER_STATE_ENV <- new.env()
 
 filtered_references = rank_cons(sampleid,samplesegment,covsumext,FILTER_STATE_ENV)
+init_filter = FILTER_STATE_ENV$state
 
 if (length(filtered_references) == 1) {
   best_ref = filtered_references
@@ -261,6 +262,6 @@ if ( (length(FILTER_STATE_ENV$mix) == 0) | FILTER_STATE_ENV$state == "FAIL"){
   filter_output = paste(FILTER_STATE_ENV$mix,paste(best_ref,collapse="/"),sep=":")
 }
 
-best_ref_output=paste(paste(sampleid,best_ref,sep="."),collapse="\n")
+best_ref_output=paste(paste(sampleid,best_ref,init_filter,sep="."),collapse="\n")
 write(filter_output,paste(sampleid,samplesegment,"filter",sep="."))
 write(best_ref_output,paste(sampleid,samplesegment,"finalchosen",sep="."))

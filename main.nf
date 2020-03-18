@@ -81,7 +81,7 @@ if( workflow.profile == 'awsbatch') {
 }
 
 // Stage config files
-ch_multiqc_config = Channel.fromPath(params.multiqc_config)
+ch_multiqc_config = file("$baseDir/assets/multiqc_config.yaml", checkIfExists: true)
 ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multiqc_config, checkIfExists: true) : Channel.empty()
 ch_output_docs = Channel.fromPath("$baseDir/docs/output.md")
 
@@ -409,7 +409,7 @@ process split_bam {
     set val(id),val(reference), file(gatkbam), file(gatkbai) from GATK_output_recalib_ch
 
     output:
-    file("${id}.${reference}_*.bam") optional true into (split_bam_ch, unlabelled_depth_in_ch)
+    file("${id}.${reference}_*.bam") optional true into split_bam_ch
 
     script:
     """
@@ -492,7 +492,7 @@ process build_coverage {
 
     output:
     set val(id),val(refseg),file("${id}.${refseg}.cov.summary") into (cov_summary_choose_consensus_ch, cov_summary_plot_ch, big_cov_input_ch)
-    set val(id),val(refseg),file("${id}.${refseg}.cov") into cov_choose_consensus_ch
+    set val(id),val(refseg),file("${id}.${refseg}.cov") into (cov_choose_consensus_ch, cov_graph_ch)
 
     script:
     """
@@ -521,7 +521,7 @@ process make_mpileup {
 
     script:
     """
-    samtools mpileup -f ${ref_fasta} -O -d 100000 -B -o \\
+    samtools mpileup -a -f ${ref_fasta} -O -d 100000 -B -o \\
     ${splitbam}.mpileup ${splitbam}
     """
 }
@@ -627,7 +627,7 @@ process choose_best_references {
     set val(segment), val(id), file(bamlist), file(fastalist), file(summarylist), file(covlist), file(referencecov) from choose_consensus_input_ch
 
     output:
-    file("${id}.${segment}.finalchosen") into (finalchosen_ch, plotchosen_ch)
+    file("${id}.${segment}.finalchosen") into (finalchosen_ch,plotchosen_ch)
     file("${id}.${segment}.filter") into chosenfilter_ch
 
     script:
@@ -643,19 +643,23 @@ process choose_best_references {
 finalchosen_ch
     .splitCsv()
     .flatten()
-    .map{text -> [text.split("\\.")[0], text.split("\\.")[1]]}
-    .into{ consensus_keys_ch; varscan_keys_ch; bcftools_keys_ch; bamdepth_keys_ch }
+    .map{text -> [text.split("\\.")[0], text.split("\\.")[1], text.split("\\.")[2]]}
+    .into{ consensus_keys_ch ; chosen_drop_filter_ch}
 
-//Final structure is {reference_segment, sample id, mpileupfile, reference_segment fasta}
+chosen_drop_filter_ch
+    .map{ id, refseg, state -> [id, refseg] }
+    .into{varscan_keys_ch; bcftools_keys_ch; bamdepth_keys_ch}
+
+//Final structure is {reference_segment, sample id, state, mpileupfile, reference_segment fasta}
 make_consensus_input_ch = consensus_keys_ch
     .combine(mpileup_make_consensus_ch, by: [0,1])
-    .map{ id,refseg, mpileupfile -> [refseg,id,mpileupfile] }
+    .map{ id,refseg, state, mpileupfile -> [refseg,id,state,mpileupfile] }
     .combine(ref_make_cons_ch, by:0 )
 
 process make_consensus {
     tag {id + "-" + chosenrefseg}
 
-    publishDir "${params.outdir}/consensus", mode: params.publishDirMode,
+    publishDir "${params.outdir}/consensus/$state", mode: params.publishDirMode,
       saveAs: {
         filename -> filename.indexOf(".log") > 0 ? "log/$filename"
         : params.consensus_by_seg ? "${chosenrefseg.split("_")[1]}/$filename"
@@ -663,16 +667,16 @@ process make_consensus {
         }
 
     input:
-    set val(chosenrefseg), val(id), file(mpileupfile), file(chosenfasta) from make_consensus_input_ch
+    set val(chosenrefseg), val(id), val(state), file(mpileupfile), file(chosenfasta) from make_consensus_input_ch
 
     output:
-    set val(id), file("${id}.${chosenrefseg}.fa") optional true into consensus_to_concat_ch
+    set val(id), val(state), file("${id}.${chosenrefseg}.fa") optional true into consensus_to_concat_ch
     file "${mpileupfile}.log"
 
     script:
     """
     build_consensus_from_variants.perl -i ${mpileupfile} -r ${chosenfasta} -l 0.2 \\
-    -u 0.8 -c 0 -o ${id}.${chosenrefseg}.fa
+    -u 0.8 -c 10 -o ${id}.${chosenrefseg}.fa
     """
 }
 
@@ -681,6 +685,8 @@ process make_consensus {
  */
 
 grouped_consensus_to_concat_ch =  consensus_to_concat_ch
+    .filter { it[1] == "PASS" }
+    .map{ id,state,file -> [id,file] }
     .groupTuple()
 
 process concatenate_consensus {
@@ -729,14 +735,14 @@ process call_varscan {
     publishDir "${params.outdir}/prevariants", mode: params.publishDirMode
 
     input:
-    set val(id),val(refseg),file(mpileupfile) from chosen_varscan_ch
+    set val(id), val(refseg), file(mpileupfile) from chosen_varscan_ch
 
     output:
     set val(id),file("${id}.${refseg}.varscan.vcf.{gz,gz.tbi}") optional true into vcf_varscan_ch
 
     script:
     """
-    varscan mpileup2cns ${mpileupfile} --variants --min-avg-qual 20 \\
+    varscan mpileup2cns ${mpileupfile} --variants --min-avg-qual 30 --min-var-freq 0.01 \\
     --output-vcf 1 > ${id}.${refseg}.varscan.vcf
     if [ \$(cat ${id}.${refseg}.varscan.vcf | grep -v '^#' | wc -c) -ne 0 ]; then
         bgzip ${id}.${refseg}.varscan.vcf
@@ -766,7 +772,7 @@ process call_bcftools {
 
     script:
     """
-    bcftools mpileup -Ou --per-sample-mF --redo-BAQ -d 10000 --min-BQ 20 -f ${refsegfasta} ${recalibfile} | bcftools call -P 1.0e-2 -m -v -Ov | \\
+    bcftools mpileup -Ou -a AD --per-sample-mF --redo-BAQ -d 10000 --min-BQ 20 -f ${refsegfasta} ${recalibfile} | bcftools call -P 1.0e-2 -m -v -Ov | \\
     vcfutils.pl varFilter -a 1 -w 1 -W 3 -d 5 -1 0.05 -2 0.05 -3 0.05 -4 0.05 > ${id}.${refseg}.multiallelic.bcftools.vcf
     if [ \$(cat ${id}.${refseg}.multiallelic.bcftools.vcf | grep -v '^#' | wc -c) -ne 0 ]; then
         bgzip ${id}.${refseg}.multiallelic.bcftools.vcf
@@ -1008,33 +1014,8 @@ process extract_fastq {
 	"""
 }
 
-/*
- * STEP 27 - Get recalibrated bam file depths
- */
-
-unlabelled_chosen_depth_in_ch = unlabelled_depth_in_ch
-  	.flatten()
-  	.map{file -> [file.getFileName().toString().split("\\.")[0], file.getFileName().toString().split("\\.")[1], file]}
-
 depth_input_ch = bamdepth_keys_ch
-    .combine(unlabelled_chosen_depth_in_ch, by:[0,1])
-
-process get_bam_depth {
-    tag {id + "-" + refseg}
-
-    publishDir "${params.outdir}/bamdepth", mode: params.publishDirMode
-
-    input:
-    set val(id), val(refseg), file(bamfile) from depth_input_ch
-
-    output:
-    set val(id), file("${bamfile}.depth") into bam_depth_split_ch
-
-    script:
-    """
-    samtools depth -a -d 100000 ${bamfile} >> ${bamfile}.depth
-    """
- }
+    .combine(cov_graph_ch, by:[0,1])
 
 /*
  * STEP 28 - Combine depth files by sample id and plot
@@ -1046,7 +1027,7 @@ process plot_depth{
     publishDir "${params.outdir}/depth_plots", mode: params.publishDirMode
 
     input:
-    set val(id), file(depthfiles) from bam_depth_split_ch.groupTuple(sort:true)
+    set val(id), val(refseg), file(depthfiles) from depth_input_ch.groupTuple(sort:true)
 
     output:
     file("${id}.basedepth.pdf")
@@ -1074,13 +1055,14 @@ process multiqc {
 
     input:
     file multiqc_config from ch_multiqc_config
+    file mqc_custom_config from ch_multiqc_custom_config.collect().ifEmpty([])
     // TODO nf-core: Add in log files from your new processes for MultiQC to find!
     file ('fastqc/*') from fastqc_results.collect().ifEmpty([])
     file ('trimqc/*') from trimqc_results.collect().ifEmpty([])
     file ('trimrep/*') from trim_reports.collect().ifEmpty([])
     file ('picardmetrics/*') from picardmetrics.collect().ifEmpty([])
     file ('software_versions/*') from software_versions_yaml.collect()
-    file workflow_summary from create_workflow_summary(summary)
+    file workflow_summary from ch_workflow_summary.collectFile(name: "workflow_summary_mqc.yaml")
 
     output:
     file "*multiqc_report.html" into multiqc_report
@@ -1090,7 +1072,6 @@ process multiqc {
     script:
     rtitle = custom_runName ? "--title \"$custom_runName\"" : ''
     rfilename = custom_runName ? "--filename " + custom_runName.replaceAll('\\W','_').replaceAll('_+','_') + "_multiqc_report" : ''
-
     custom_config_file = params.multiqc_config ? "--config $mqc_custom_config" : ''
 
     """

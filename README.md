@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-# nf-core/influenzangs
-
-**This pipeline generates consensus sequences and variant call files from influenza next generation sequencing data.**.
-
-[![Build Status](https://travis-ci.com/nf-core/influenzangs.svg?branch=master)](https://travis-ci.com/nf-core/influenzangs)
-[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A50.32.0-brightgreen.svg)](https://www.nextflow.io/)
-=======
 # ![nf-core/influenzangs](docs/images/nf-core-influenzangs_logo.png)
 
 **This pipeline generates consensus sequences and variant call files from influenza next generation sequencing data.**.
@@ -13,18 +5,11 @@
 [![GitHub Actions CI Status](https://github.com/nf-core/influenzangs/workflows/nf-core%20CI/badge.svg)](https://github.com/nf-core/influenzangs/actions)
 [![GitHub Actions Linting Status](https://github.com/nf-core/influenzangs/workflows/nf-core%20linting/badge.svg)](https://github.com/nf-core/influenzangs/actions)
 [![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A519.10.0-brightgreen.svg)](https://www.nextflow.io/)
->>>>>>> TEMPLATE
 
 [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg)](http://bioconda.github.io/)
 [![Docker](https://img.shields.io/docker/automated/nfcore/influenzangs.svg)](https://hub.docker.com/r/nfcore/influenzangs)
 
 ## Introduction
-<<<<<<< HEAD
-The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It comes with docker containers making installation trivial and results highly reproducible.
-
-
-## Documentation
-=======
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It comes with docker containers making installation trivial and results highly reproducible.
 
@@ -54,7 +39,6 @@ See [usage docs](docs/usage.md) for all of the available options when running th
 
 ## Documentation
 
->>>>>>> TEMPLATE
 The nf-core/influenzangs pipeline comes with documentation about the pipeline, found in the `docs/` directory:
 
 1. [Installation](https://nf-co.re/usage/installation)
@@ -69,9 +53,6 @@ The nf-core/influenzangs pipeline comes with documentation about the pipeline, f
 <!-- TODO nf-core: Add a brief overview of what the pipeline does and how it works -->
 
 ## Credits
-<<<<<<< HEAD
-nf-core/influenzangs was originally written by Jeremy Guntoro and Aengus Stewart.
-=======
 
 nf-core/influenzangs was originally written by Jeremy Guntoro, Aengus Stewart.
 
@@ -94,4 +75,3 @@ You can cite the `nf-core` publication as follows:
 >
 > _Nat Biotechnol._ 2020 Feb 13. doi: [10.1038/s41587-020-0439-x](https://dx.doi.org/10.1038/s41587-020-0439-x).  
 > ReadCube: [Full Access Link](https://rdcu.be/b1GjZ)
->>>>>>> TEMPLATE

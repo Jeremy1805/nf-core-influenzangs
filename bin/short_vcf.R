@@ -23,7 +23,7 @@ vcffile = args[1]
 
 vcfdata <- read.vcfR(vcffile, verbose = FALSE)
 vcfDP4 <- extract.info(vcfdata, element = 'DP4')
-vcfvarscanfreq <- extract.gt(vcfdata, element = 'FREQ')[,1]
+vcfvarscanfreq <- extract.gt(vcfdata, element = 'FREQ')[,"Sample1"]
 vcfvarscanfreq_num <- as.numeric(sub("%", "",vcfvarscanfreq))
 vcfDP4_split <- strsplit(vcfDP4,split=",")
 vcfDP4freq <- round(suppressWarnings(sapply(vcfDP4_split,DP4_to_freq)),2)

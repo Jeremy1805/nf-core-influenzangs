@@ -8,8 +8,6 @@ Content-Type: text/html; charset=utf-8
 
 $email_html
 
-<<<<<<< HEAD
-=======
 --nfcoremimeboundary
 Content-Type: image/png;name="nf-core-influenzangs_logo.png"
 Content-Transfer-Encoding: base64
@@ -27,7 +25,6 @@ Content-Disposition: inline; filename="nf-core-influenzangs_logo.png"
   flatten().
   join( '\n' ) %>
 
->>>>>>> TEMPLATE
 <%
 if (mqcFile){
 def mqcFileObj = new File("$mqcFile")
