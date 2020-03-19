@@ -21,8 +21,8 @@ jobs:
           sudo mv nextflow /usr/local/bin/
       - name: Pull docker image
         run: |
-          docker pull jeremy1805/influenzangs:1.0
-          docker tag jeremy1805/influenzangs:1.0 jeremy1805/influenzangs:1.0
+          docker pull jeremy1805/influenzangs:dev
+          docker tag jeremy1805/influenzangs:dev jeremy1805/influenzangs:dev
           docker pull broadinstitute/gatk3:3.8-1
       - name: Run pipeline with test data
         run: |
@@ -39,8 +39,8 @@ jobs:
           NXF_VER: '19.10.0'
       - name: Download and tag image
         run: |
-          docker pull jeremy1805/influenzangs:1.0
-          docker tag jeremy1805/influenzangs:1.0 jeremy1805/influenzangs:1.0
+          docker pull jeremy1805/influenzangs:dev
+          docker tag jeremy1805/influenzangs:dev jeremy1805/influenzangs:dev
           docker pull broadinstitute/gatk3:3.8-1
       - name: Get test data
         run: |
