@@ -27,7 +27,7 @@ jobs:
       - name: Run pipeline with test data
         run: |
           nextflow run ${GITHUB_WORKSPACE} -profile test,docker
-data_test:
+  data_test:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v1
