@@ -12,8 +12,19 @@ regexes = {
     'BWA': ['v_bwa.txt', r"Version: (\S+)"],
     'MultiQC': ['v_multiqc.txt', r"multiqc, version (\S+)"],
     'TrimGalore': ['v_trim_galore.txt', r"version (\S+)"],
-    'PicardMarkDuplicates': ['v_picard_mark_dup.txt', r"(\S+)"],
-    'PicardCreateSequenceDictionary': ['v_picard_dict.txt', r"(\S+)"]
+    'PicardMarkDuplicates': ['v_picard_mark_dup.txt', r"([\d\.]+)-SNAPSHOT"],
+    'PicardCreateSequenceDictionary': ['v_picard_dict.txt', r"([\d\.]+)-SNAPSHOT"],
+    'GATK4': ['v_gatk.txt', r"The Genome Analysis Toolkit \(GATK\) v(\S+)"],
+    'python': ['v_python.txt', r"Python (\S+)"],
+    'VarScan': ['v_varscan.txt', r"VarScan v(\S+)"],
+    'bcftools': ['v_bcftools.txt', r"bcftools (\S+)"],
+    'bedtools': ['v_bedtools.txt', r"bedtools v(\S+)"],
+    'ClustalW': ['v_clustal.txt', r"CLUSTAL (\S+) Multiple Sequence Alignments"],
+    'R': ['v_R.txt', r"R version (\S+) "],
+    'pyfaidx': ['v_pyfaidx.txt', r"(\S+)"],
+    'BBMap': ['v_bbmap.txt', r"BBMap version (\S+)"],
+    'bamutils': ['v_bamutils.txt', r"Version: (\S+);"],
+    'bc': ['v_bc.txt', r"bc (\S+)"]
 }
 results = OrderedDict()
 results['nf-core/influenzangs'] = '<span style="color:#999999;\">N/A</span>'

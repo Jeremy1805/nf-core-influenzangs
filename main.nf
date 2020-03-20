@@ -165,6 +165,17 @@ process get_software_versions {
     picard MarkDuplicates --version &> v_picard_mark_dup.txt 2>&1 || true
     picard CreateSequenceDictionary --version &> v_picard_dict.txt 2>&1 || true
     multiqc --version &> v_multiqc.txt 2>&1 || true
+    gatk -version > v_gatk.txt 2>&1 || true
+    python --version > v_python.txt 2>&1 || true
+    varscan > v_varscan.txt 2>&1 || true
+    bcftools --version >v_bcftools.txt 2>&1 || true
+    bedtools --version >v_bedtools.txt 2>&1 || true
+    clustalw --version >v_clustal.txt 2>&1 || true
+    R --version > v_R.txt 2>&1 || true
+    faidx --version > v_pyfaidx.txt 2>&1 || true
+    bbmap.sh --version > v_bbmap.txt 2>&1 || true
+    bc -version > v_bc.txt 2>&1 || true
+    bam > v_bamutils.txt 2>&1 || true
     scrape_software_versions.py &> software_versions_mqc.yaml
     """
 }
