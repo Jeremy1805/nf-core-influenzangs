@@ -280,7 +280,7 @@ process build_bwa_mem_alignments {
 
     script:
     """
-    bwa mem -t 4 -M -B 2 -R "@RG\\tID:${id}\\tLB:${id}\\tSM:${id}\\tPL:ILLUMINA" \\
+    bwa mem -t ${task.cpus} -M -B 2 -R "@RG\\tID:${id}\\tLB:${id}\\tSM:${id}\\tPL:ILLUMINA" \\
     ${reference} ${trimreads1} ${trimreads2}| samtools sort -@8 -O BAM -o ${id}.${reference}.bam -
 
     samtools index ${id}.${reference}.bam
@@ -687,7 +687,7 @@ process make_consensus {
     script:
     """
     build_consensus_from_variants.perl -i ${mpileupfile} -r ${chosenfasta} -l 0.2 \\
-    -u 0.8 -c 10 -o ${id}.${chosenrefseg}.fa
+    -u 0.8 -c 10 -o ${id}.${chosenrefseg}.fa -n ${id} 
     """
 }
 

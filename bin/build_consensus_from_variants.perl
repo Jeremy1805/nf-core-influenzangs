@@ -41,7 +41,7 @@ no warnings 'qw';
 use Getopt::Std;
 use FindBin qw( $Bin );
 
-use vars qw( $opt_i $opt_r $opt_o $opt_l $opt_u $opt_h $opt_d $opt_c );
+use vars qw( $opt_i $opt_r $opt_o $opt_l $opt_u $opt_h $opt_d $opt_c $opt_n);
 our ( $VERSION, @FIELD_NAMES );
 
 $VERSION = 0.1;
@@ -109,7 +109,7 @@ my $k;
 my $debug;
 
 # Get command line args
-getopts("i:o:r:u:l:d:c:h");
+getopts("i:o:r:u:l:d:c:h:n:");
 
 if ( ! $opt_i )
 {
@@ -365,7 +365,14 @@ while( defined( $record = <F_IN_MPILE> ) )
 
 foreach $chr ( keys( %seqs_out ) )
 {
-  print F_OUT_FASTA ">${chr}\n";
+  if ( $opt_n )
+    {
+      print F_OUT_FASTA ">${opt_n}.${chr}\n";
+    }
+    else
+    {
+      print F_OUT_FASTA ">${chr}\n";
+    }
   print_fixed_lines( *F_OUT_FASTA, 50, $seqs_out{ $chr } );
 }
 
